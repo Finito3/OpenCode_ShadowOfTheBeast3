@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shadow of the Beast III - web runner (bring your own media)</title>
+<style>
+  body { background:#111; color:#ddd; font-family:system-ui,sans-serif;
+         margin:0; padding:24px; }
+  h1 { font-size:18px; }
+  .box { max-width:760px; margin:0 auto; }
+  .row { margin:10px 0; }
+  label { display:block; font-size:13px; margin-bottom:4px; color:#aaa; }
+  input[type=file] { color:#ccc; }
+  #emu { width:100%; aspect-ratio:4/3; background:#000; border:1px solid #333; }
+  .note { font-size:12px; color:#888; line-height:1.5; }
+  button { background:#2a6; color:#000; border:0; padding:8px 14px;
+           border-radius:4px; font-weight:600; cursor:pointer; }
+  button:disabled { background:#444; color:#777; cursor:default; }
+</style>
+</head>
+<body>
+<div class="box">
+  <h1>Shadow of the Beast III &mdash; browser runner</h1>
+  <p class="note">
+    This page runs the <b>real</b> Amiga game on a WebAssembly Amiga emulator.
+    It ships <b>no</b> game or ROM data. You must select your own legally
+    owned Kickstart ROM and the game media. The game is &copy; 1992 Psygnosis.
+  </p>
+
+  <div class="row">
+    <label for="rom">Kickstart ROM (e.g. kick13.rom, 512&nbsp;KB)</label>
+    <input id="rom" type="file" accept=".rom,.bin">
+  </div>
+  <div class="row">
+    <label for="disk">Game media: Disk.1 (.adf) &mdash; or an HDF/WHDLoad image</label>
+    <input id="disk" type="file" accept=".adf,.hdf,.img">
+  </div>
+  <div class="row">
+    <label for="disk2">Disk.2 (.adf, optional)</label>
+    <input id="disk2" type="file" accept=".adf,.hdf,.img">
+  </div>
+  <div class="row">
+    <label for="disk3">Disk.3 (.adf, optional)</label>
+    <input id="disk3" type="file" accept=".adf,.hdf,.img">
+  </div>
+  <div class="row">
+    <button id="run" disabled>Run</button>
+  </div>
+
+  <div id="emu"></div>
+
+  <p class="note" style="margin-top:16px">
+    Emulator: <b>vAmigaWeb</b> (GPLv3). Place its build
+    (<code>js/vAmigaWeb_player.js</code>, <code>vAmiga.js</code>,
+    <code>vAmiga.wasm</code>) in <code>./vamigaweb/</code> before serving this
+    page. See <code>web/README.md</code>.
+  </p>
+</div>
+
+<!-- vAmigaWeb player (self-hosted; not committed to this repo) -->
+<script src="./vamigaweb/js/vAmigaWeb_player.js"></script>
+<script>
+  const el = id => document.getElementById(id);
+  const emu = el('emu');
+
+  function readAsDataURL(file) {
+    return new Promise((res, rej) => {
+      const r = new FileReader();
+      r.onload = () => res(r.result);
+      r.onerror = rej;
+      r.readAsDataURL(file);
+    });
+  }
+
+  function refresh() {
+    el('run').disabled = !(el('rom').files[0] && el('disk').files[0]);
+  }
+  ['rom','disk','disk2','disk3'].forEach(id =>
+    el(id).addEventListener('change', refresh));
+
+  el('run').addEventListener('click', async () => {
+    const rom = await readAsDataURL(el('rom').files[0]);
+    const d1  = await readAsDataURL(el('disk').files[0]);
+    const d2f = el('disk2').files[0];
+    const d3f = el('disk3').files[0];
+    const extra = [];
+    if (d2f) extra.push({ name: d2f.name, url: await readAsDataURL(d2f) });
+    if (d3f) extra.push({ name: d3f.name, url: await readAsDataURL(d3f) });
+
+    // vAmigaWeb player expects same-origin file descriptors. Passing data
+    // URLs works for a self-hosted player. Configure an A500: 512K chip +
+    // 512K fast/slow, PAL. Adjust once the exact player API version is pinned.
+    vAmigaWeb_player.samesite_file = {
+      kickstart_rom_url: rom,
+      url: d1,
+      name: el('disk').files[0].name
+    };
+    vAmigaWeb_player.vAmigaWeb_url = './vamigaweb/';
+    const config = {
+      AROS: false,
+      navbar: false,
+      wide: true,
+      border: 0.3,
+      port2: true,
+      extra_files: extra,        // may need mapping to player API (see README)
+      chipram: 512,
+      fastram: 512,
+      pal: true
+    };
+    vAmigaWeb_player.load(emu, encodeURIComponent(JSON.stringify(config)));
+  });
+</script>
+</body>
+</html>

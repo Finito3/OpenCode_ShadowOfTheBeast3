@@ -1,0 +1,21 @@
+# Local original (copyrighted) data - never commit
+original/
+*.lha
+*.adf
+*.hdf
+*.ipf
+*.rom
+web/media/
+web/roms/
+
+# Ghidra working artifacts (raw copyrighted extracts + generated project)
+ghidra/proj/
+ghidra/*.bin
+ghidra/Disk1_raw.bin
+ghidra/headless_*.log
+ghidra/*_decomp.txt
+ghidra/*_funcs.txt
+
+# vAmigaWeb build (third-party GPL, self-hosted)
+web/vamigaweb/
+web/js/vAmigaWeb_player.js
