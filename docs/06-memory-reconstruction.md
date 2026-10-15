@@ -57,3 +57,15 @@ Run: `cd engine && npm install && npm run dev`.
   copper-ish headers; f28 (300 B) similar.
 - Tool: tools/render_bp.py (bitplane -> PNG). Renders stay in
   extracted/renders/ (gitignored, personal use only).
+
+## 6. Sprite rendering (visual RE proof)
+
+Small files are Amiga sprites: 8-byte header + 16px-wide 2-plane bitmap
+(4 bytes/row). Rendered with L1 palette (sprite colors 16+):
+- fa2 (88B): striped red/brown pattern (platform edge / bar)
+- f22 (68B): similar striped sprite
+- f30 (156B): ornate door/panel shapes (pink/beige on black)
+- f28 (300B): ornate vertical column (red/gold decor)
+Tool: inline sprite() in analysis scripts; renders in extracted/renders/
+(personal use only). Tile graphics (fa1 etc.) are likely compressed or
+use different plane counts - next RE step.
