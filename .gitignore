@@ -1,5 +1,6 @@
 # Local original (copyrighted) data - never commit
 original/
+extracted/
 *.lha
 *.adf
 *.hdf
@@ -10,11 +11,13 @@ web/roms/
 
 # Ghidra working artifacts (raw copyrighted extracts + generated project)
 ghidra/proj/
+ghidra/proj_*/
 ghidra/*.bin
 ghidra/Disk1_raw.bin
 ghidra/headless_*.log
 ghidra/*_decomp.txt
 ghidra/*_funcs.txt
+ghidra/*_listing.txt
 
 # vAmigaWeb build (third-party GPL, self-hosted)
 web/vamigaweb/
