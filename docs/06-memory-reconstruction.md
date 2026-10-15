@@ -82,3 +82,14 @@ Level stream: f20 (3000B sequential tile placements).
 High-entropy unknowns (ByteKiller scan negative, no HUNK magic):
 fa1, f01, f02, f29, f21, f23, ff0, fz0-3, beast3p1/2.obj - either
 different compression/encryption or dense mixed code+data.
+
+## 8. Emulator path (Maptapper-style memory dump)
+
+Static tile guessing hit limits (copper changes colors per scanline; big
+files use unknown packing). Per Maptapper docs, the reliable method is a
+WinUAE save-state taken IN Level 1, then Tile Ripper on the memory dump
+(ILBM 16x16 tiles are the most common Amiga format).
+FS-UAE 3.2.35 portable runs headless-capable on Linux (verified binary
+starts), but no Kickstart ROM is available in this environment, so the
+dump must be produced where the game already runs (owner PC + WinUAE).
+See docs/07-maptapper-guide.md.
