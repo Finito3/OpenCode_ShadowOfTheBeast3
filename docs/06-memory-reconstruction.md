@@ -42,3 +42,18 @@ TS + PixiJS, 50 Hz fixed step, dual-layer parallax placeholders, hero body
 with jump/gravity, re-authored Level 1 structure from walkthrough prose
 (platforms, crane, guns, spikes, hill, boss run). No original bytes.
 Run: `cd engine && npm install && npm run dev`.
+
+## 5. Level 1 findings (visual RE)
+
+- Palette at to_8000+0x398 (32 colors): yellows 0FCC/0CA9/0A87/0975,
+  test colors 000F/00F0/00FF/0F00/0F0F/0FF0/0FFF, forest greens/browns
+  0120/0111/0960/0C00/0A52/0941/0730/0620, dark ramp, grays. Matches a
+  forest level. Grayscale ramp at to_5A000+0 (fade table).
+- Direct bitmap renders of data regions yield noise: graphics are stored
+  as TILES + tilemap/placement streams, not linear bitmaps.
+- Disk.2 file f20 (3000 B) shows sequential tile-placement records
+  (incrementing IDs 153-155, 161-163, ... with separators 152/255/0).
+- Small files fa2 (88 B), f22 (68 B), f30 (156 B) are sprite-sized with
+  copper-ish headers; f28 (300 B) similar.
+- Tool: tools/render_bp.py (bitplane -> PNG). Renders stay in
+  extracted/renders/ (gitignored, personal use only).
