@@ -93,3 +93,21 @@ FS-UAE 3.2.35 portable runs headless-capable on Linux (verified binary
 starts), but no Kickstart ROM is available in this environment, so the
 dump must be produced where the game already runs (owner PC + WinUAE).
 See docs/07-maptapper-guide.md.
+
+## 9. Kickstart + WHDLoad setup (local)
+
+- Kickstart 1.3 ROM: AmigaKickStart/ROMS/Kickstart 1.3.rom (MD5 82a21c1890cae844b3df741f2762d8d)
+- WHDLoad USR package: downloaded from whdload.de, extracted to extracted/fsuae_hd/
+  (WHDLoad, WHDLoad.VFS, WHDLoad.prefs, S/WHDLoad-Startup, DIC, RawDIC, Patcher, WArc)
+- RTB relocation file: kick34005.A500.RTB (from skick346.lha)
+- FS-UAE 3.2.35 portable runs on Linux (verified binary starts), but needs OpenGL
+  (headless server has no GPU) -> use owner PC (WinUAE/FS-UAE) or GPU-equipped Linux.
+
+## 10. Next steps (pixel-perfect map)
+
+1. On owner PC: install WHDLoad, run Beast3 installer with original disks, play into
+   Level 1, save state, load save state in Maptapper, rip ILBM tiles + map.
+2. OR: use Unicorn Engine (M68K) to trace loader memory writes and reconstruct the
+   memory image without GPU.
+3. Parse entity/enemy/item positions from engine code + data files.
+4. Extend engine scaffold with real palette, tile renderer, copper-based colors.
