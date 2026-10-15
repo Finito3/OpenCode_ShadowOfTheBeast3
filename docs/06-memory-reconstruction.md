@@ -69,3 +69,16 @@ Small files are Amiga sprites: 8-byte header + 16px-wide 2-plane bitmap
 Tool: inline sprite() in analysis scripts; renders in extracted/renders/
 (personal use only). Tile graphics (fa1 etc.) are likely compressed or
 use different plane counts - next RE step.
+
+## 7. Code vs data classification (Disk.2 files)
+
+Raw code files (start with 68k `41 fa` LEA, contain RTS): `main` (3,4KB,
+8 Ghidra funcs), `beast3p3.obj` (464B), `fa5` (76KB), `f24` (89KB),
+`fc1` (190KB - biggest, likely main engine), plus fa4/f25/f27/f32
+(RTS markers). These are loaded via LoadPsyFile and executed.
+Sprite files (rendered OK as 16px 2-plane + 8B header): fa2, f22, f30,
+f28 - ornamental decor, doors, columns.
+Level stream: f20 (3000B sequential tile placements).
+High-entropy unknowns (ByteKiller scan negative, no HUNK magic):
+fa1, f01, f02, f29, f21, f23, ff0, fz0-3, beast3p1/2.obj - either
+different compression/encryption or dense mixed code+data.
