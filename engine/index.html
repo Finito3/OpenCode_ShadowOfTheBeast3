@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SOTB3 style engine (own assets)</title>
+<style>
+  body { background:#0a0a0a; color:#ccc; font-family:system-ui,sans-serif;
+         margin:0; display:flex; flex-direction:column; align-items:center; }
+  #app { width:960px; max-width:100vw; }
+  canvas { width:100%; image-rendering:pixelated; background:#000; }
+  .hud { font-size:12px; color:#888; padding:8px; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div class="hud">Arrows/WASD move, Z = fire, X = weapon, Space = inventory placeholder</div>
+<script type="module" src="/src/main.ts"></script>
+</body>
+</html>
