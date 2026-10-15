@@ -22,3 +22,7 @@ ghidra/*_listing.txt
 # vAmigaWeb build (third-party GPL, self-hosted)
 web/vamigaweb/
 web/js/vAmigaWeb_player.js
+
+# python cache
+__pycache__/
+*.pyc
