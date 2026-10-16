@@ -4,10 +4,10 @@ import { Tilemap } from './tilemap';
 // Static chunked tile renderer. Loads local tileset (16x16 tiles, 16 cols)
 // and bakes map chunks into RenderTextures. Falls back to null when the
 // tileset is missing (caller keeps debug layer).
-// Verified tiles (viewed): mossy-rock tops 228/229/230, solid rock 59/236/244.
-// Rainbow tiles (wrong copper band) excluded.
-const TOPS = [228, 229, 230];
-const FILLS = [59, 236, 244];
+// Verified tiles (v2 tileset, phase-aligned cuts): mossy tops 248/249,
+// solid rock 243/245/223. Rainbow tiles (wrong copper band) excluded.
+const TOPS = [248, 249];
+const FILLS = [243, 245, 223];
 
 function hash2(x: number, y: number): number {
   let h = (x * 73856093) ^ (y * 19349663);
