@@ -2,3 +2,5 @@
 assets/l1_palette.json
 assets/l1_tileset.png
 assets/*.png
+level1_grid.json
+*.json
