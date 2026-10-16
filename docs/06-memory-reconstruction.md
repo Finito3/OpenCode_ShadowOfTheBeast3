@@ -173,3 +173,16 @@ tools/copper_fb.py renders ANY state: 2s.uss @0xD5A gives same tree
 scrolled left + second tree entering right = horizontal scrolling proven.
 Stitch multiple scroll positions -> full Level 1 map (next step).
 3s.wav = gameplay audio capture (MP3 gamerip exists online for reference).
+
+## 16. Multi-state Level 1 screens (states/*.uss)
+
+Owner saved 7 states across Level 1. copper_fb.py renders each:
+- 1s/1lvl/2s: big tree, different scroll X (scrolling proven)
+- 2a: black (transition/loading frame)
+- 3a: three warrior figures (enemy encounter or hero frames)
+- 4: crane puzzle (2 wheels + chain + hanging chains + 2 platforms)
+- 5: platform gap (left/right mossy edges)
+- 6: floating platforms (1 top-right, 2 bottom)
+All 320x192x3 interleaved with copper palette. Renders in
+extracted/renders/states/fb_*.png (personal use only).
+Next: stitch by scroll into full L1 map; SPR/entities per state; audio.
