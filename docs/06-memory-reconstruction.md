@@ -186,3 +186,13 @@ Owner saved 7 states across Level 1. copper_fb.py renders each:
 All 320x192x3 interleaved with copper palette. Renders in
 extracted/renders/states/fb_*.png (personal use only).
 Next: stitch by scroll into full L1 map; SPR/entities per state; audio.
+
+## 17. SPR0/SPR1 ze stavu 3a (diagonalni fragment)
+
+Copper SPR0=$02A69C, SPR1=$02A700 (oba 16x24 2-plane, 100 B spacing).
+Render jednotlive (banky 16/20/24/28) i attached (16 barev 16-31):
+diagonalni hnedo-cerveny pas s detaily = fragment (zbran? ruka? efekt?),
+ne cela postava. Tri bojovnici z fb_3a jsou v BITPLANE framebufferu
+(bobove vykreslene do playfieldu), ne HW sprity. Hrdina je pravdepodobne
+bob nebo jiny SPR slot/par; k overeni pomuze hrac (viz fb_3a).
+Renders: extracted/renders/hero*.png (lokalne).
