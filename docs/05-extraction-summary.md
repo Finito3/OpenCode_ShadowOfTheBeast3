@@ -121,3 +121,18 @@ Everything under `original/` and `extracted/` is third-party copyrighted
 material (Psygnosis/Reflections 1992) and is gitignored. The repo contains
 only analysis, docs, and own tooling. Personal-use RE is the basis here;
 no redistribution.
+
+## 7. Disk.3 + RAM directory findings (2026-10-16)
+
+- Disk.3 @ $3000: vlastni adresar (42 souboru: f40-f51, f60-f88, fe0-fe4,
+  f03). Extrahovano do extracted/files_disk3/ (stejna metoda blockmapy).
+- RAM adresar @0x900 v 1lvl.dat: MERGE obou disku (f01-f49 + f40-f49...),
+  16B polozky: size = 24-bit big-endian na +11; [+0..+3] = flag/stav
+  (00000000 = naceous, 00000001/jine = pouzivano).
+- Level 1 pouziva soubory z OBOU disku (Disk.2: fa2/fc2/f27-f32/f20/f22/
+  fc0/ff0; Disk.3: f42/f44/f45/f48).
+- f44 (93860 B, Disk.3) = Level 1 CODE overlay (zacina LEA, 93KB kodu).
+- f45 (20756 B) = smiseny kod+data (148x RTS, 18x LEA-pc).
+- fa1 (25728 B) stale neznamy format (uniformni entropie 7.6, zadny
+  ByteKiller/RNC/HUNK, XOR/ROL bez efektu) - pravdepodobne smiseny
+  kod+data nebo jina komprese.
