@@ -6,6 +6,7 @@ import { Tilemap } from './engine/tilemap';
 import { TileRenderer } from './engine/tiles';
 import { Enemy, Shuriken } from './engine/enemy';
 import { loadPalette } from './data/assets';
+import { Music } from './engine/audio';
 import { level1Ladders2D, level1Spawns2D, LEVEL1_W, LEVEL1_H } from './levels/level1_full';
 
 const VW = 320;
@@ -60,6 +61,8 @@ function drawHud() {
   hudG.endFill();
 }
 app.stage.addChild(hud);
+const music = new Music();
+music.load('assets/forestcc.mp3');
 
 const keys = new Set<string>();
 const pressed = new Set<string>();
@@ -108,10 +111,11 @@ async function boot() {
       if (input.left) facing = -1;
       if (input.right) facing = 1;
       hero.update(dt, input, mapObj, level1Ladders2D);
-      // fire shuriken (Z), one at a time
+      // fire shuriken (Z), one at a time; M toggles music
       if ((pressed.has('KeyZ')) && !shuriken.alive) {
         shuriken.fire(hero.body.x + hero.body.w / 2, hero.body.y + 4, facing);
       }
+      if (pressed.has('KeyM')) music.toggleMute();
       pressed.clear();
       shuriken.update(dt, solidAt);
       for (const e of enemies) {
