@@ -27,3 +27,6 @@ web/js/vAmigaWeb_player.js
 __pycache__/
 *.pyc
 states/
+map/
+node_modules/
+dist/
