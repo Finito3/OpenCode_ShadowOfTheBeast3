@@ -162,3 +162,14 @@ Conclusion: tiles use non-standard layout (custom stride/interleave, RLE,
 or code-mixed storage). f44 has only 15 RTS/93KB = mostly DATA with
 repeating `00 89` pattern (634x) - candidate RLE/packed stream.
 Next: Ghidra tile-blit routine in f44/fc1, or Maptapper save-state rip.
+
+## 15. Save states (1s.uss/2s.uss) + scrolling proof
+
+Owner PC WinUAE 6.0.3 ASF save states (states/1s.uss compressed, 2s.uss,
+3s.wav audio). ASF chunks: CRAM/BRAM (512KB chip/fast, zlib w/ 8B header),
+BPLX/SPR0-7/AUD/CIA (chip state). 1s.uss CRAM == 1lvl.dat at 96% (same
+Level 1 moment); 2s.uss differs (other scroll position).
+tools/copper_fb.py renders ANY state: 2s.uss @0xD5A gives same tree
+scrolled left + second tree entering right = horizontal scrolling proven.
+Stitch multiple scroll positions -> full Level 1 map (next step).
+3s.wav = gameplay audio capture (MP3 gamerip exists online for reference).
