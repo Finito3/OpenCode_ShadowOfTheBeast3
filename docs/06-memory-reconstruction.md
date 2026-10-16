@@ -251,3 +251,16 @@ Moje stavba (level1_full.ts): 8 linearnich zon, 240x12. SPATNE v:
 Spravne: poradi zon dle walkthrough, zebriky, jerab, boss arena.
 Akce: prestavet level1_full.ts na 2D mapu z level1_grid.npy + semantika
 (zeme/plosina/zebrik/nebezpeci) + entity z walkthrough.
+
+## 23. Audio extraction: forestcc MOD (Level 1 music)
+
+StarTrekker FLT4 modules found via magic scan. Only real MOD is in Level 1
+RAM (1lvl.dat @0xBDBA; magic at +1080). Others (fa5/f24/fc1/f44/f65) are
+replay-code references (cmp.l #'FLT4'), not music.
+- forestcc.mod (82642 B): 54 positions, 24 patterns, ST-01 samples
+  (bass/koto/snare/lead/perc). ffmpeg/libopenmpt validates (Startrekker).
+  Duration 5:45 = gamerip reference. WAV->MP3 192k for practical use.
+- Other levels' music (castle/temple/caves) loads on level entry; needs
+  save states from L2+ (not yet played) or gamerip reference.
+- Outputs stay in extracted/audio/ (gitignored, personal use only).
+- SFX: not yet isolated (likely small samples in replay files).
