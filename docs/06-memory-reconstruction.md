@@ -111,3 +111,20 @@ See docs/07-maptapper-guide.md.
    memory image without GPU.
 3. Parse entity/enemy/item positions from engine code + data files.
 4. Extend engine scaffold with real palette, tile renderer, copper-based colors.
+
+## 11. main.bin = MFM disk reader module (Disk.2, 3472 B, 8 Ghidra funcs)
+
+Disassembly at base 0 shows low-level trackdisk routines (A5 = state,
+A6 = $DFF000):
+- FUN_826: filename matcher (12-byte compare loop, like LoadPsyFile .loop2)
+- FUN_924: track/sector calc (mulu #$804, compare #$400)
+- FUN_964: checksum (sum $200 words)
+- FUN_97A: interrupt wait ($1E) + ack ($9C)
+- FUN_9A4: CIA-B poll ($BFDD00 bit 4)
+- FUN_9BE: MFM sync setup (writes $4489, fills $AAAB, disk DMA, checks
+  $552AAAAA marker) - track sync + decode init
+- FUN_B36: WORD-level MFM odd/even decode ($5555/$AAAB masks)
+- FUN_B76: raster wait (VHPOSR $06 change detect)
+So the game retains its own MFM path alongside WHDLoad linear loads.
+fa5/f24/fc1 start with audio init (CLR AUDx, LEA $DFF0A0) = replay+engine
+code files; fc1 (190KB) needs entry-point mapping (4B header).
