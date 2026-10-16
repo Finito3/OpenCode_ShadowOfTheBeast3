@@ -224,3 +224,14 @@ se lesnich textur. Panorama 1s+4+5 ma viditelne svy = NEjsou sousede.
 Zaver: pro celou mapu je treba (a) vice stavu vyplnujicich mezery, nebo
 (b) scroll X primo z pameti (herni promenna), nehadat z obrazku.
 renders/pano_1s_4_5.png = ukazka (jerab uprostred sedi).
+
+## 21. Tileset z framebufferu (bez nutnosti vsech scen)
+
+Odpoved na "nejde to poskladat z dostupnych dat?": ANO, jde.
+Misto cekani na savestaty z kazde obrazovky staci framebuffery, ktere
+uz mame: 16x16 dlazdice vyrizle z renderu (fb_3a, pf2, crane, plats),
+deduplikovane -> 268 unikatnich dlazdic L1 (kura, listi, plosiny,
+retezy, skaly). Nastroj inline; vystup extracted/tiles/l1_tileset.png
++ index (zdroj+pozice). Osobni pouziti, necommitovat (extracted/).
+Dalsi krok: poskladat mapu (f20 placements + screenshot reference),
+kolize, entity, engine.
