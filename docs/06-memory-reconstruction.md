@@ -196,3 +196,12 @@ ne cela postava. Tri bojovnici z fb_3a jsou v BITPLANE framebufferu
 (bobove vykreslene do playfieldu), ne HW sprity. Hrdina je pravdepodobne
 bob nebo jiny SPR slot/par; k overeni pomuze hrac (viz fb_3a).
 Renders: extracted/renders/hero*.png (lokalne).
+
+## 18. Dual-layer framebuffer solved (3a.uss)
+
+Odd planes ($071BB6/$071BDE/$071C06, 40B/row) = layer 1 (tree/warriors).
+Even planes ($07961A/$079646/$079672, 44B/row = 352px) = layer 2
+(forest canopy, floating island, ground). Copper switches bands via WAITs.
+Renders: fb_3a.png (L1), pf2_3a_rb44.png (L2). Palette per band comes from
+copper COLORxx MOVEs (static render uses base palette; copper gradients
+refine per scanline).
