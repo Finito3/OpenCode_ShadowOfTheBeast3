@@ -205,3 +205,12 @@ Even planes ($07961A/$079646/$079672, 44B/row = 352px) = layer 2
 Renders: fb_3a.png (L1), pf2_3a_rb44.png (L2). Palette per band comes from
 copper COLORxx MOVEs (static render uses base palette; copper gradients
 refine per scanline).
+
+## 19. Copper emulator + dual playfield render (tools/copper_render.py)
+
+Minimal copper interpreter (MOVE/WAIT/SKIP/END) tracking BPLxPTH/PTL,
+COLOR00-31, BPLCON0/1, BPL1MOD/2MOD per scanline band; renders 6-plane
+dual playfield (PF1=odd planes colors 0-7, PF2=even colors 8-15).
+State 3a: warriors render in correct browns (was pink with static pal),
+top black correct. Lower bands need scroll/modulo refinement (BPLCON1
+fine-scroll + per-band pointers) - next iteration.
