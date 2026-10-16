@@ -235,3 +235,19 @@ retezy, skaly). Nastroj inline; vystup extracted/tiles/l1_tileset.png
 + index (zdroj+pozice). Osobni pouziti, necommitovat (extracted/).
 Dalsi krok: poskladat mapu (f20 placements + screenshot reference),
 kolize, entity, engine.
+
+## 22. HOL mapa vs moje stavba (porovnani)
+
+Original (map/1893_map1.png, HOL, 5312x1024, watermarkovana, lokalne):
+- DVoupasmova: horni cesta (radky ~15-31) + dolni cesta (~37-59), propojene
+  zebriky/sachtami. NENI linearni linie!
+- Kolizni mrizka 332x64 (16px): extracted/level1_grid.npy (7802 solid).
+  Huste sloupce x=162-164, 202-204, 227-234, 307-331 = veze/zebriky.
+- Vodoznaky HOL = izolovane komponenty (filtrovat prahem velikosti).
+Moje stavba (level1_full.ts): 8 linearnich zon, 240x12. SPATNE v:
+  (a) vertikalni rozsah (12 radku vs realnych ~45 radku obsahu),
+  (b) chybi horni/dolni vetveni a propojky,
+  (c) sirka 240 vs 332 dlazdic.
+Spravne: poradi zon dle walkthrough, zebriky, jerab, boss arena.
+Akce: prestavet level1_full.ts na 2D mapu z level1_grid.npy + semantika
+(zeme/plosina/zebrik/nebezpeci) + entity z walkthrough.
