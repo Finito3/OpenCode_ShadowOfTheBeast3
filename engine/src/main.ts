@@ -9,7 +9,7 @@ import { level1Ladders2D, level1Spawns2D, LEVEL1_W, LEVEL1_H } from './levels/le
 const VW = 320;
 const VH = 192;
 
-const app = new PIXI.Application({ width: VW, height: VH, backgroundColor: 0x000000 });
+const app = new PIXI.Application({ width: VW, height: VH, backgroundColor: 0x0a0e1a });
 document.getElementById('app')!.appendChild(app.view as HTMLCanvasElement);
 
 const world = new PIXI.Container();

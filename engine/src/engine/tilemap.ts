@@ -31,19 +31,26 @@ export class Tilemap {
     return this.solid[ty]?.[tx] ?? false;
   }
 
-  // Debug/placeholder render: white = solid. Replaced by tileset when present.
+  // Debug/placeholder render: moss top where exposed, rock fill else.
+  // Replaced by real tileset when local assets are present.
   buildDebugLayer(): PIXI.Container {
     const c = new PIXI.Container();
-    const g = new PIXI.Graphics();
-    g.beginFill(0x8a8a8a);
     const t = this.tile;
+    const top = new PIXI.Graphics();
+    const fill = new PIXI.Graphics();
+    top.beginFill(0x4a6b2a);
+    fill.beginFill(0x5a4a3a);
     for (let y = 0; y < this.h; y++) {
       for (let x = 0; x < this.w; x++) {
-        if (this.isSolid(x, y)) g.drawRect(x * t, y * t, t, t);
+        if (!this.isSolid(x, y)) continue;
+        const g = !this.isSolid(x, y - 1) ? top : fill;
+        g.drawRect(x * t, y * t, t, t);
       }
     }
-    g.endFill();
-    c.addChild(g);
+    top.endFill();
+    fill.endFill();
+    // cull far outside: keep simple, Pixi culls off-screen anyway
+    c.addChild(fill, top);
     return c;
   }
 }
