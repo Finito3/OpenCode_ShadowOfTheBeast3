@@ -128,3 +128,15 @@ A6 = $DFF000):
 So the game retains its own MFM path alongside WHDLoad linear loads.
 fa5/f24/fc1 start with audio init (CLR AUDx, LEA $DFF0A0) = replay+engine
 code files; fc1 (190KB) needs entry-point mapping (4B header).
+
+## 12. RAM dump Level 1 -> pixel-perfect framebuffer (1lvl.dat)
+
+Owner PC WinUAE RAM dump (1 MB chip RAM) while game runs in Level 1.
+Tool `tools/copper_fb.py` parses the copperlist (default @0xD62):
+- BPL1/2/3 pointers $071BB6/$071BDE/$071C06 (40 B apart = interleaved rows)
+- 27 COLORxx MOVEs (bark browns 1-7, reds 17-19, sky blue-grays 21-31)
+- Multi-band WAITs ($20/$26/$2C) = raster splits for parallax
+Rendered 320x192x3 interleaved with copper palette = pixel-perfect Level 1
+tree (trunk, branches, foliage) on transparent black. Renders in
+extracted/renders/fb_L1_realpal.png (local, personal use only).
+Second band ($07961A+) is a different buffer/layout (noise with same params).
