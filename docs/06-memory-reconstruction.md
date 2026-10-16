@@ -214,3 +214,13 @@ dual playfield (PF1=odd planes colors 0-7, PF2=even colors 8-15).
 State 3a: warriors render in correct browns (was pink with static pal),
 top black correct. Lower bands need scroll/modulo refinement (BPLCON1
 fine-scroll + per-band pointers) - next iteration.
+
+## 20. Panorama pokus (image matching pres sauvety)
+
+nastroj: presne prekryvy pres maskovane pixely (ignoruje cernou).
+Jiste: 4->5 (diff 0.0, S=224). Hypotezy 1s->4 (diff 36.8), 1s->6, 4->6
+(NEKONZISTENTNI: 1s->4 + 4->6 != 1s->6) = falesne matche z opakujicich
+se lesnich textur. Panorama 1s+4+5 ma viditelne svy = NEjsou sousede.
+Zaver: pro celou mapu je treba (a) vice stavu vyplnujicich mezery, nebo
+(b) scroll X primo z pameti (herni promenna), nehadat z obrazku.
+renders/pano_1s_4_5.png = ukazka (jerab uprostred sedi).
