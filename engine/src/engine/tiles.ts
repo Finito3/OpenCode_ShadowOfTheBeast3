@@ -4,8 +4,13 @@ import { Tilemap } from './tilemap';
 // Static chunked tile renderer. Loads local tileset (16x16 tiles, 16 cols)
 // and bakes map chunks into RenderTextures. Falls back to null when the
 // tileset is missing (caller keeps debug layer).
-const MOSS = [241, 240, 9, 10];
-const ROCK = [53, 60, 231, 229, 34];
+// Edge-aware tiles (measured from extracted tileset):
+// 239 = top edge (black above), 263 = right edge, 242 = top-right corner,
+// 260 = uniform fill. (Left/bottom edges reuse fill for now.)
+const TOP_EDGE = 239;
+const RIGHT_EDGE = 263;
+const TOP_RIGHT = 242;
+const FILL = 260;
 
 function hash2(x: number, y: number): number {
   let h = (x * 73856093) ^ (y * 19349663);
@@ -34,9 +39,14 @@ export class TileRenderer {
     }
   }
 
-  pick(tx: number, ty: number, exposedTop: boolean): number {
-    const list = exposedTop ? MOSS : ROCK;
-    return list[hash2(tx, ty) % list.length] % Math.max(1, this.frames.length);
+  pick(tx: number, ty: number, map: Tilemap): number {
+    const top = !map.isSolid(tx, ty - 1);
+    const right = !map.isSolid(tx + 1, ty);
+    let idx = FILL;
+    if (top && right) idx = TOP_RIGHT;
+    else if (top) idx = TOP_EDGE;
+    else if (right) idx = RIGHT_EDGE;
+    return idx % Math.max(1, this.frames.length);
   }
 
   // Bake map into chunk sprites (each <= 2048px wide). Returns container.
@@ -51,7 +61,7 @@ export class TileRenderer {
       for (let y = 0; y < map.h; y++) {
         for (let x = cx; x < cx + cw; x++) {
           if (!map.isSolid(x, y)) continue;
-          const s = new PIXI.Sprite(this.frames[this.pick(x, y, !map.isSolid(x, y - 1))]);
+          const s = new PIXI.Sprite(this.frames[this.pick(x, y, map)]);
           s.position.set((x - cx) * t, y * t);
           g.addChild(s);
         }

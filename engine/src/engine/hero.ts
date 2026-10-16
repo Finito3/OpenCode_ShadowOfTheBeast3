@@ -41,11 +41,15 @@ export class Hero {
     const cx = b.x + b.w / 2;
     const cy = b.y + b.h / 2;
 
-    const onLadder = ladders.some(
+    const ladder = ladders.find(
       (l) => Math.abs(cx - (l.tx * 16 + 8)) < 10 && cy >= l.ty0 * 16 && cy <= (l.ty1 + 1) * 16,
     );
+    const onLadder = ladder !== undefined;
 
-    if (onLadder && (input.up || input.down)) {
+    if (onLadder && ladder && (input.up || input.down)) {
+      // snap to ladder center so the hero climbs ON it, not beside it
+      const targetX = ladder.tx * 16 + 8 - b.w / 2;
+      b.x += (targetX - b.x) * Math.min(1, dt * 12);
       b.vy = (input.down ? climb : 0) - (input.up ? climb : 0);
       b.x += ((input.right ? speed : 0) - (input.left ? speed : 0)) * dt * 0.5;
       b.y += b.vy * dt;
