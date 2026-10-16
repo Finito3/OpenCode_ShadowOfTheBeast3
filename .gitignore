@@ -26,3 +26,4 @@ web/js/vAmigaWeb_player.js
 # python cache
 __pycache__/
 *.pyc
+states/
