@@ -149,3 +149,16 @@ $06A3CE/$06A42A/$06A486/$06A4E2, SPR6-7 at $06A316/$06A372 (each entry
 banks 16/24: background mountain/cloud blobs (coherent shapes, not noise).
 Hero sprite not yet isolated (may use attached pairs or other slots;
 SPR0-1 off in this frame). Renders: extracted/renders/spr_all_b16_b24.png.
+
+## 14. Tile format hunt (negative results narrow the search)
+
+Tried on fa1 (25728 B) and to_8000 regions, all with L1 palette:
+16x16x3/4/5 seq+int, 32x32x3/2, bit-reversed bytes, grayscale (geometry
+check), autocorrelation strides 32-512 (flat), XOR/ROL/NIBBLE (no change).
+All noise. Frequency analysis: fa1 top bytes 00/FF/80/01/10/08 (single-bit
+values) = bitplane-like, NOT encrypted (encryption would flatten or shift
+distribution, ROL/XOR preserve entropy which stayed 7.53).
+Conclusion: tiles use non-standard layout (custom stride/interleave, RLE,
+or code-mixed storage). f44 has only 15 RTS/93KB = mostly DATA with
+repeating `00 89` pattern (634x) - candidate RLE/packed stream.
+Next: Ghidra tile-blit routine in f44/fc1, or Maptapper save-state rip.
