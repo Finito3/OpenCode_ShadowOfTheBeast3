@@ -4,13 +4,10 @@ import { Tilemap } from './tilemap';
 // Static chunked tile renderer. Loads local tileset (16x16 tiles, 16 cols)
 // and bakes map chunks into RenderTextures. Falls back to null when the
 // tileset is missing (caller keeps debug layer).
-// Edge-aware tiles (measured from extracted tileset):
-// 239 = top edge (black above), 263 = right edge, 242 = top-right corner,
-// 260 = uniform fill. (Left/bottom edges reuse fill for now.)
-const TOP_EDGE = 239;
-const RIGHT_EDGE = 263;
-const TOP_RIGHT = 242;
-const FILL = 260;
+// Verified tiles (viewed): mossy-rock tops 228/229/230, solid rock 59/236/244.
+// Rainbow tiles (wrong copper band) excluded.
+const TOPS = [228, 229, 230];
+const FILLS = [59, 236, 244];
 
 function hash2(x: number, y: number): number {
   let h = (x * 73856093) ^ (y * 19349663);
@@ -41,11 +38,8 @@ export class TileRenderer {
 
   pick(tx: number, ty: number, map: Tilemap): number {
     const top = !map.isSolid(tx, ty - 1);
-    const right = !map.isSolid(tx + 1, ty);
-    let idx = FILL;
-    if (top && right) idx = TOP_RIGHT;
-    else if (top) idx = TOP_EDGE;
-    else if (right) idx = RIGHT_EDGE;
+    const h = hash2(tx, ty);
+    const idx = top ? TOPS[h % TOPS.length] : FILLS[h % FILLS.length];
     return idx % Math.max(1, this.frames.length);
   }
 
