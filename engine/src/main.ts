@@ -62,7 +62,8 @@ function drawHud() {
 }
 app.stage.addChild(hud);
 const music = new Music();
-music.load('assets/forestcc.mp3');
+music.load('forest', 'assets/forest.mp3');
+music.load('boss', 'assets/boss.mp3');
 
 const keys = new Set<string>();
 const pressed = new Set<string>();
@@ -146,6 +147,8 @@ async function boot() {
         hero.body.x = (start?.tx ?? 6) * 16;
         hero.body.y = (start?.ty ?? 55) * 16;
       }
+      // music zone: boss arena switches track
+      music.setTrack(hero.body.x > 185 * 16 ? 'boss' : 'forest');
       drawHud();
       const maxX = LEVEL1_W * 16 - VW;
       const maxY = LEVEL1_H * 16 - VH;
