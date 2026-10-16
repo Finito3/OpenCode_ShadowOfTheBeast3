@@ -140,3 +140,12 @@ Rendered 320x192x3 interleaved with copper palette = pixel-perfect Level 1
 tree (trunk, branches, foliage) on transparent black. Renders in
 extracted/renders/fb_L1_realpal.png (local, personal use only).
 Second band ($07961A+) is a different buffer/layout (noise with same params).
+
+## 13. Sprites from RAM dump (1lvl.dat)
+
+Copperlist @0xD62 SPRxPTH/PTL: SPR0-1 off ($00000000), SPR2-5 at
+$06A3CE/$06A42A/$06A486/$06A4E2, SPR6-7 at $06A316/$06A372 (each entry
+92 B = 4 control + 88 bitmap = 16x22 2-plane). Rendered with L1 palette
+banks 16/24: background mountain/cloud blobs (coherent shapes, not noise).
+Hero sprite not yet isolated (may use attached pairs or other slots;
+SPR0-1 off in this frame). Renders: extracted/renders/spr_all_b16_b24.png.
