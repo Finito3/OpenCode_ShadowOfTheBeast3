@@ -5,6 +5,7 @@ import { Hero } from './engine/hero';
 import { Tilemap } from './engine/tilemap';
 import { TileRenderer } from './engine/tiles';
 import { Enemy, Shuriken } from './engine/enemy';
+import { Pickup, Door, Lever, Boss, Goal } from './engine/interactables';
 import { loadPalette } from './data/assets';
 import { Music } from './engine/audio';
 import { level1Ladders2D, level1Spawns2D, LEVEL1_W, LEVEL1_H } from './levels/level1_full';
@@ -42,6 +43,33 @@ world.addChild(shuriken.sprite);
 shuriken.sprite.visible = false;
 let facing = 1;
 
+// Interactables from the level overlay: pickups, doors, lever, boss, exit.
+const pickups = level1Spawns2D
+  .filter((s) => s.kind === 'item' || s.kind === 'key')
+  .map((s) => new Pickup(s.tx, s.ty, s.kind === 'key' ? 'key' : 'item'));
+const doors = level1Spawns2D
+  .filter((s) => s.kind === 'door')
+  .map((s) => new Door(s.tx, s.ty, 1, 3));
+const levers = level1Spawns2D.filter((s) => s.kind === 'lever').map((s) => new Lever(s.tx, s.ty));
+const bossSpawn = level1Spawns2D.find((s) => s.kind === 'boss');
+const boss = bossSpawn ? new Boss(bossSpawn.tx, bossSpawn.ty) : null;
+const goal = new Goal(306, 54);
+for (const o of pickups) world.addChild(o.sprite);
+for (const o of doors) world.addChild(o.sprite);
+for (const o of levers) world.addChild(o.sprite);
+if (boss) world.addChild(boss.sprite);
+world.addChild(goal.sprite);
+
+let keysHeld = 0;
+let won = false;
+const winText = new PIXI.Text('LEVEL CLEAR', { fontFamily: 'monospace', fontSize: 20, fill: 0x66ffcc });
+winText.position.set(VW / 2, VH / 2 - 12);
+winText.anchor.set(0.5, 0.5);
+winText.visible = false;
+app.stage.addChild(winText);
+
+const doorSolid = (tx: number, ty: number) => doors.some((d) => d.blocks(tx, ty));
+
 // HUD: energy bars (shrink with energy), counter, shuriken icon
 const hud = new PIXI.Container();
 const hudG = new PIXI.Graphics();
@@ -59,6 +87,19 @@ function drawHud() {
   hudG.beginFill(shuriken.alive ? 0x555555 : 0xdddddd);
   hudG.drawRect(VW - 20, VH - 18, 12, 12);
   hudG.endFill();
+  // keys held
+  hudG.beginFill(0xf2c14e);
+  for (let i = 0; i < keysHeld; i++) hudG.drawRect(30 + i * 8, VH - 16, 4, 8);
+  hudG.endFill();
+  // boss health bar (top center) while the leader is alive
+  if (boss && boss.active && boss.alive) {
+    hudG.beginFill(0x330000);
+    hudG.drawRect(VW / 2 - 50, 6, 100, 6);
+    hudG.endFill();
+    hudG.beginFill(0xd23b3b);
+    hudG.drawRect(VW / 2 - 50, 6, (100 * boss.hp) / boss.maxHp, 6);
+    hudG.endFill();
+  }
 }
 app.stage.addChild(hud);
 const music = new Music();
@@ -99,9 +140,14 @@ async function boot() {
     }
   }
   const solidAt = (px: number, py: number) =>
-    mapObj ? mapObj.isSolid(Math.floor(px / 16), Math.floor(py / 16)) : false;
+    doorSolid(Math.floor(px / 16), Math.floor(py / 16)) ||
+    (mapObj ? mapObj.isSolid(Math.floor(px / 16), Math.floor(py / 16)) : false);
   const game = new Game(
     (dt) => {
+      if (won) {
+        app.render();
+        return;
+      }
       const input = {
         left: keys.has('ArrowLeft') || keys.has('KeyA'),
         right: keys.has('ArrowRight') || keys.has('KeyD'),
@@ -111,14 +157,38 @@ async function boot() {
       };
       if (input.left) facing = -1;
       if (input.right) facing = 1;
-      hero.update(dt, input, mapObj, level1Ladders2D);
-      // fire shuriken (Z), one at a time; M toggles music
-      if ((pressed.has('KeyZ')) && !shuriken.alive) {
+      hero.update(dt, input, mapObj, level1Ladders2D, 176, doorSolid);
+      // fire shuriken (Z), one at a time; M toggles music; X uses lever
+      if (pressed.has('KeyZ') && !shuriken.alive) {
         shuriken.fire(hero.body.x + hero.body.w / 2, hero.body.y + 4, facing);
       }
       if (pressed.has('KeyM')) music.toggleMute();
+      if (pressed.has('KeyX')) {
+        const lv = levers.find((l) => l.body.x < hero.body.x + hero.body.w && l.body.x + l.body.w > hero.body.x && Math.abs(l.body.y - hero.body.y) < 24);
+        lv?.toggle();
+      }
       pressed.clear();
       shuriken.update(dt, solidAt);
+
+      // pickups
+      for (const p of pickups) {
+        if (p.taken) continue;
+        if (overlap(hero.body, p.body)) {
+          p.taken = true;
+          p.sprite.visible = false;
+          if (p.kind === 'key') keysHeld += 1;
+          else hero.energy = Math.min(100, hero.energy + 25);
+        }
+      }
+      // doors: open with a held key when the hero is close
+      for (const d of doors) {
+        if (d.open || keysHeld <= 0) continue;
+        if (overlap(hero.body, { x: d.body.x - 24, y: d.body.y, w: d.body.w + 48, h: d.body.h })) {
+          d.setOpen();
+          keysHeld -= 1;
+        }
+      }
+
       for (const e of enemies) {
         if (!e.alive) continue;
         e.update(dt, solidAt);
@@ -141,14 +211,37 @@ async function boot() {
           shuriken.sprite.visible = false;
         }
       }
+
+      // boss: wakes in the arena, drains energy on touch, dies to shuriken
+      if (boss && !boss.active && hero.body.x > 185 * 16) boss.active = true;
+      if (boss && boss.active && boss.alive) {
+        boss.update(dt, solidAt, hero.body);
+        if (overlap(hero.body, boss.body) && boss.touchCd <= 0) {
+          hero.energy = Math.max(0, hero.energy - 20);
+          boss.touchCd = 1.0;
+        }
+        if (shuriken.alive && overlap(shuriken.body, boss.body)) {
+          const died = boss.hit();
+          shuriken.alive = false;
+          shuriken.sprite.visible = false;
+          if (died) goal.win();
+        }
+      }
+
+      // exit opens once the leader falls
+      if (boss && !boss.alive && overlap(hero.body, goal.body)) {
+        won = true;
+        winText.visible = true;
+      }
+
       if (hero.energy <= 0 && hero.lives > 0) {
         hero.lives -= 1;
         hero.energy = 100;
         hero.body.x = (start?.tx ?? 6) * 16;
         hero.body.y = (start?.ty ?? 55) * 16;
       }
-      // music zone: boss arena switches track
-      music.setTrack(hero.body.x > 185 * 16 ? 'boss' : 'forest');
+      // music zone: leader/arena switches to the boss track
+      music.setTrack(boss && boss.active ? 'boss' : 'forest');
       drawHud();
       const maxX = LEVEL1_W * 16 - VW;
       const maxY = LEVEL1_H * 16 - VH;

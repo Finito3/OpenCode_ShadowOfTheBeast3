@@ -14,6 +14,7 @@ export class Hero {
   onGround = false;
   energy = 100;
   lives = 3;
+  private extraSolid: ((tx: number, ty: number) => boolean) | null = null;
 
   constructor() {
     this.sprite.beginFill(0xc0392b);
@@ -22,8 +23,10 @@ export class Hero {
   }
 
   private solidAt(map: Tilemap | null, px: number, py: number): boolean {
+    const tx = Math.floor(px / 16), ty = Math.floor(py / 16);
+    if (this.extraSolid && this.extraSolid(tx, ty)) return true;
     if (!map || !map.loaded) return false;
-    return map.isSolid(Math.floor(px / 16), Math.floor(py / 16));
+    return map.isSolid(tx, ty);
   }
 
   update(
@@ -32,7 +35,9 @@ export class Hero {
     map: Tilemap | null,
     ladders: { tx: number; ty0: number; ty1: number }[],
     flatGroundY = 176,
+    extraSolid: ((tx: number, ty: number) => boolean) | null = null,
   ) {
+    this.extraSolid = extraSolid;
     const speed = 90;
     const jumpV = -260;
     const gravity = 900;
@@ -85,7 +90,7 @@ export class Hero {
     const y0 = Math.floor(b.y / 16), y1 = Math.floor((b.y + b.h - 0.01) / 16);
     for (let ty = y0; ty <= y1; ty++) {
       for (let tx = x0; tx <= x1; tx++) {
-        if (!map.isSolid(tx, ty)) continue;
+        if (!this.solidAt(map, tx * 16 + 8, ty * 16 + 8)) continue;
         if (isX) {
           b.x = b.vx > 0 ? tx * 16 - b.w - 0.01 : (tx + 1) * 16 + 0.01;
           b.vx = 0;
