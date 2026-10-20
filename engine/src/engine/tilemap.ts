@@ -31,6 +31,21 @@ export class Tilemap {
     return this.solid[ty]?.[tx] ?? false;
   }
 
+  // Build a collision grid from authored solid rects (tiles).
+  fromRects(w: number, h: number, rects: { x: number; y: number; w: number; h: number }[]): void {
+    this.w = w;
+    this.h = h;
+    this.solid = Array.from({ length: h }, () => new Array<boolean>(w).fill(false));
+    for (const r of rects) {
+      for (let y = r.y; y < Math.min(r.y + r.h, h); y++) {
+        for (let x = r.x; x < Math.min(r.x + r.w, w); x++) {
+          if (x >= 0 && y >= 0) this.solid[y][x] = true;
+        }
+      }
+    }
+    this.loaded = true;
+  }
+
   // Debug/placeholder render: moss top where exposed, rock fill else.
   // Replaced by real tileset when local assets are present.
   buildDebugLayer(): PIXI.Container {

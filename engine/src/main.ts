@@ -9,6 +9,7 @@ import { Pickup, Door, Lever, Boss, Goal } from './engine/interactables';
 import { loadPalette } from './data/assets';
 import { Music } from './engine/audio';
 import { level1Ladders2D, level1Spawns2D, LEVEL1_W, LEVEL1_H } from './levels/level1_full';
+import { LEVEL1_SOLIDS } from './levels/level1_collision';
 
 const VW = 320;
 const VH = 192;
@@ -53,7 +54,7 @@ const doors = level1Spawns2D
 const levers = level1Spawns2D.filter((s) => s.kind === 'lever').map((s) => new Lever(s.tx, s.ty));
 const bossSpawn = level1Spawns2D.find((s) => s.kind === 'boss');
 const boss = bossSpawn ? new Boss(bossSpawn.tx, bossSpawn.ty) : null;
-const goal = new Goal(306, 54);
+const goal = new Goal(306, 59);
 for (const o of pickups) world.addChild(o.sprite);
 for (const o of doors) world.addChild(o.sprite);
 for (const o of levers) world.addChild(o.sprite);
@@ -122,8 +123,8 @@ function overlap(a: { x: number; y: number; w: number; h: number }, b: { x: numb
 }
 
 async function boot() {
-  await map.load('assets/level1_grid.json');
-  await loadPalette('assets/l1_palette.json');
+  map.fromRects(LEVEL1_W, LEVEL1_H, LEVEL1_SOLIDS);
+  void loadPalette('assets/l1_palette.json');
   const mapObj = map.loaded ? map : null;
   if (map.loaded) {
     if (await tiles.load('assets/l1_tileset.png')) {
@@ -241,7 +242,7 @@ async function boot() {
         hero.body.y = (start?.ty ?? 55) * 16;
       }
       // music zone: leader/arena switches to the boss track
-      music.setTrack(boss && boss.active ? 'boss' : 'forest');
+      music.setTrack(hero.body.x > 250 * 16 ? 'boss' : 'forest');
       drawHud();
       const maxX = LEVEL1_W * 16 - VW;
       const maxY = LEVEL1_H * 16 - VH;
@@ -257,3 +258,19 @@ async function boot() {
   game.start();
 }
 void boot();
+
+if (import.meta.env.DEV) {
+  (window as unknown as { __sotb?: unknown }).__sotb = {
+    hero,
+    boss,
+    goal,
+    map,
+    doors,
+    get won() {
+      return won;
+    },
+    get keys() {
+      return keysHeld;
+    },
+  };
+}

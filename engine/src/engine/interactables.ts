@@ -157,8 +157,8 @@ export class Boss {
     }
     const dx = target.x + target.w / 2 - (b.x + b.w / 2);
     this.dir = dx >= 0 ? 1 : -1;
-    if (Math.abs(dx) > 6) b.vx = this.dir * this.speed;
-    else b.vx = 0;
+    // stationary guard at the arena; the player must shoot it
+    b.vx = 0;
     b.vy += 900 * dt;
     b.x += b.vx * dt;
     const aheadX = this.dir > 0 ? b.x + b.w : b.x;
